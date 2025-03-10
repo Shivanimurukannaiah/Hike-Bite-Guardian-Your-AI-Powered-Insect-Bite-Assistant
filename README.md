@@ -30,6 +30,7 @@ streamlit run app.py
 🔑 OpenAI API Key Setup
 To use the chatbot, you need an OpenAI API key:
 
+
 Get your API key from OpenAI.
 Enter your API key in the sidebar when running the Streamlit app.
 📜 How It Works
