@@ -1,48 +1,55 @@
 import streamlit as st
 from openai import OpenAI
+import utils
+import sys
+import os
+sys.path.append(os.path.dirname(__file__))  # Ensures local module search
 
-# Sidebar for API Key input
+# Sidebar for API key
 with st.sidebar:
-    openai_api_key = st.text_input("OpenAI API Key", key="chatbot_api_key", type="password")
+    openai_api_key = st.text_input("Enter your OpenAI API Key", type="password")
+    st.markdown("[Get an OpenAI API key](https://platform.openai.com/account/api-keys)")
 
 st.title("🦟 Hike Bite Guardian")
 st.write("Identify insect bites and get first-aid guidance.")
 
-# User input
-prompt = st.text_input("Describe your symptoms and the insect bite.")
+# Session state for storing messages
+if "messages" not in st.session_state:
+    st.session_state["messages"] = [{"role": "assistant", "content": "Describe your symptoms and the insect bite."}]
 
-if prompt:
+# Display chat history
+for msg in st.session_state.messages:
+    st.chat_message(msg["role"]).write(msg["content"])
+
+# User input handling
+if prompt := st.chat_input("Describe your symptoms and the insect"):
     if not openai_api_key:
-        st.warning("Please enter your OpenAI API Key to continue.")
+        st.warning("Please enter your OpenAI API key.")
         st.stop()
 
-    # Initialize OpenAI Client
-    client = OpenAI(api_key=openai_api_key)
+    # Append user message
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    st.chat_message("user").write(prompt)
 
-    # Define the system prompt for better results
-    system_prompt = """You are a bot that helps identify insect bites. 
-    When given a description of symptoms and insect appearance, return the following structured response:
-    - Identified Bug: (Possible insect name)
-    - Symptoms: (Expected symptoms of this bite)
-    - Severity: (Mild, Moderate, Severe)
-    - Bug Information: (Brief details about the insect)
-    - First Aid: (Recommended first-aid treatment)
-    """
+    # Identify bug and generate response
+    bug_info = utils.identify_bug(prompt)
+    if bug_info["Identified Bug"] != "Unknown":
+        response = utils.generate_bug_response(bug_info)
 
-    messages = [
-        {"role": "system", "content": system_prompt},
-        {"role": "user", "content": f"Symptoms and description: {prompt}"}
-    ]
+        # Generate images for the insect and bite
+        insect_image = utils.generate_image(f"{bug_info['Identified Bug']} insect", openai_api_key)
+        bite_image = utils.generate_image(f"{bug_info['Identified Bug']} insect bite on human skin", openai_api_key)
+    else:
+        response = "I'm sorry, I couldn't identify the bug. Try providing more details."
+        insect_image = None
+        bite_image = None
 
-    # Call OpenAI API
-    response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=messages
-    )
+    # Append assistant message
+    st.session_state.messages.append({"role": "assistant", "content": response})
+    st.chat_message("assistant").write(response)
 
-    # Extract the response
-    bot_reply = response.choices[0].message.content
-
-    # Display results
-    st.write("### Results:")
-    st.write(bot_reply)
+    # Show images if available
+    if insect_image:
+        st.image(insect_image, caption=f"{bug_info['Identified Bug']} Insect")
+    if bite_image:
+        st.image(bite_image, caption=f"{bug_info['Identified Bug']} Bite Reaction")
