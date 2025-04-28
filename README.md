@@ -16,7 +16,7 @@
 ## 🛠 Installation  
 
 ### 1️⃣ Clone the Repository  
-```bash
+bash
 git clone https://github.com/yourusername/Hike-Bite-Guardian.git
 cd Hike-Bite-Guardian
 
@@ -43,16 +43,10 @@ First-Aid & Prevention Tips
 
 📷 Screenshots
 <img width="1470" alt="Screenshot 2025-03-09 at 8 34 32 PM" src="https://github.com/user-attachments/assets/3456ae7d-ad24-4696-86ef-b716622d06d2" />
-
-🤝 Contributing
-Want to improve Hike Bite Guardian? Follow these steps:
-
-Fork the repository
-Create a new branch (feature-new-bug)
-Commit and push your changes
-Open a pull request
-
-
+![Screenshot](images/1.png)
+![Screenshot](images/2.2.png)
+![Screenshot](images/2.png)
+![Screenshot](images/3.2.png)
 ### **What This Fixes:**  
 ✅ **Proper Line Breaks** – Adds spaces between sections.  
 ✅ **Corrects Markdown Formatting** – Ensures lists, code blocks, and headings display correctly.  
